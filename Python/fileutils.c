@@ -9,6 +9,10 @@
 extern int winerror_to_errno(int);
 #endif
 
+#ifdef __wasi__
+#include "wasi_python_shims.h"
+#endif
+
 #ifdef HAVE_LANGINFO_H
 #include <langinfo.h>
 #endif

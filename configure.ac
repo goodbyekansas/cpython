@@ -382,6 +382,9 @@ then
 	*-*-vxworks*)
 	    ac_sys_system=VxWorks
 	    ;;
+  wasm32-unknown-wasi)
+      ac_sys_system=Wasi
+      ;;
 	*)
 		# for now, limit cross builds to known configurations
 		MACHDEP="unknown"
@@ -431,6 +434,9 @@ if test "$cross_compiling" = yes; then
 	*-*-vxworks*)
 		_host_cpu=$host_cpu
 		;;
+  wasm32-unknown-wasi)
+    _host_cpu=$host_cpu
+    ;;
 	*)
 		# for now, limit cross builds to known configurations
 		MACHDEP="unknown"
@@ -943,23 +949,27 @@ AC_ARG_WITH(suffix,
 	esac])
 AC_MSG_RESULT($EXEEXT)
 
-# Test whether we're running on a non-case-sensitive system, in which
-# case we give a warning if no ext is given
 AC_SUBST(BUILDEXEEXT)
-AC_MSG_CHECKING(for case-insensitive build directory)
-if test ! -d CaseSensitiveTestDir; then
-mkdir CaseSensitiveTestDir
-fi
+if test -z $EXEEXT; then
+  # Test whether we're running on a non-case-sensitive system, in which
+  # case we give a warning if no ext is given
+  AC_MSG_CHECKING(for case-insensitive build directory)
+  if test ! -d CaseSensitiveTestDir; then
+    mkdir CaseSensitiveTestDir
+  fi
 
-if test -d casesensitivetestdir
-then
-    AC_MSG_RESULT(yes)
-    BUILDEXEEXT=.exe
+  if test -d casesensitivetestdir
+  then
+      AC_MSG_RESULT(yes)
+      BUILDEXEEXT=.exe
+  else
+  	AC_MSG_RESULT(no)
+  	BUILDEXEEXT=$EXEEXT
+  fi
+  rmdir CaseSensitiveTestDir
 else
-	AC_MSG_RESULT(no)
-	BUILDEXEEXT=$EXEEXT
+  BUILDEXEEXT=$EXEEXT
 fi
-rmdir CaseSensitiveTestDir
 
 case $ac_sys_system in
 hp*|HP*)
@@ -3108,6 +3118,9 @@ then
         CXX="$CXX -pthread"
     fi
     posix_threads=yes
+elif test "$ac_cv_wasmthread" = "yes"
+then
+    CFLAGS="$CFLAGS -D_WASM_THREADS"
 else
     if test ! -z "$withval" -a -d "$withval"
     then LDFLAGS="$LDFLAGS -L$withval"

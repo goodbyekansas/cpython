@@ -77,7 +77,10 @@ PyThread_init_thread(void)
     PyThread__init_thread();
 }
 
-#if defined(_POSIX_THREADS)
+#if defined(_WASM_THREADS)
+#   define PYTHREAD_NAME "wasmthreads🦖"
+#   include "thread_wasm.h"
+#elif defined(_POSIX_THREADS)
 #   define PYTHREAD_NAME "pthread"
 #   include "thread_pthread.h"
 #elif defined(NT_THREADS)

@@ -42,8 +42,21 @@
 
 #include "Python.h"
 #include "pycore_condvar.h"
+#ifdef _WASM_THREADS
 
-#ifdef _POSIX_THREADS
+#define PyMUTEX_INIT(mut) 0
+#define PyMUTEX_FINI(mut) 0
+#define PyMUTEX_LOCK(mut) 0
+#define PyMUTEX_UNLOCK(mut) 0
+
+#define PyCOND_INIT(cond) 0
+#define PyCOND_FINI(cond) 0
+#define PyCOND_SIGNAL(cond) 0
+#define PyCOND_BROADCAST(cond) 0
+#define PyCOND_WAIT(cond, mut) 0
+#define PyCOND_TIMEDWAIT(cond, mut, us) 0
+
+#elif defined(_POSIX_THREADS)
 /*
  * POSIX support
  */

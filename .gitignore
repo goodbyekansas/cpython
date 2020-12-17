@@ -30,6 +30,7 @@ tags
 TAGS
 .vs/
 .vscode/
+.cache/
 gmon.out
 .coverage
 .mypy_cache/
@@ -92,8 +93,10 @@ PCbuild/arm32/
 PCbuild/arm64/
 PCbuild/obj/
 PCbuild/win32/
+/python.wasm
 /autom4te.cache
 /build/
+/compile_commands.json
 /config.cache
 /config.log
 /config.status
@@ -105,11 +108,13 @@ PCbuild/win32/
 /python-config.py
 /python.bat
 /python-gdb.py
+/python.wasm-gdb.py
 /python.exe-gdb.py
 /reflog.txt
 /coverage/
 /externals/
 /htmlcov/
+/.clangd/
 Tools/msi/obj
 Tools/ssl/amd64
 Tools/ssl/win32

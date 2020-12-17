@@ -14,7 +14,12 @@
 # endif
 #endif
 
-#ifdef _POSIX_THREADS
+#if defined(_WASM_THREADS)
+#define Py_HAVE_CONDVAR
+#define PyMUTEX_T int
+#define PyCOND_T int
+
+#elif defined(_POSIX_THREADS)
 /*
  * POSIX support
  */

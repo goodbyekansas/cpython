@@ -4,7 +4,11 @@
 #include "Python.h"
 #include "posixmodule.h"
 
+#ifdef __wasi__
+#include "wasi_python_shims.h"
+#else
 #include <pwd.h>
+#endif
 
 #include "clinic/pwdmodule.c.h"
 /*[clinic input]
