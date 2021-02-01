@@ -1,3 +1,4 @@
+#include <wasi_python_shims.h>
 
 /*
  * Initialization.
@@ -5,6 +6,7 @@
 static void
 PyThread__init_thread(void)
 {
+  wt_init_thread();
 }
 
 /*
@@ -13,13 +15,11 @@ PyThread__init_thread(void)
 unsigned long
 PyThread_start_new_thread(void (*func)(void *), void *arg)
 {
-    int success = 0;            /* init not needed when SOLARIS_THREADS and */
-                /* C_THREADS implemented properly */
-
     dprintf(("PyThread_start_new_thread called\n"));
     if (!initialized)
         PyThread_init_thread();
-    return success < 0 ? -1 : 0;
+
+    return wt_start_new_thread(func, arg);
 }
 
 unsigned long
@@ -28,8 +28,7 @@ PyThread_get_thread_ident(void)
     if (!initialized)
         PyThread_init_thread();
 
-    // there can be only one: https://open.spotify.com/track/78UcxP3Xm0EOXneQUDsStA?si=geoeQYBJTrCRINNvrCd-6w
-    return 1;
+    return wt_get_thread_ident();
 }
 
 void
@@ -38,6 +37,8 @@ PyThread_exit_thread(void)
     dprintf(("PyThread_exit_thread called\n"));
     if (!initialized)
         exit(0);
+
+    wt_exit_thread();
 }
 
 /*
@@ -46,22 +47,20 @@ PyThread_exit_thread(void)
 PyThread_type_lock
 PyThread_allocate_lock(void)
 {
-    // very lock, much thread-safe
-    static int current_lock = 0;
-
     dprintf(("PyThread_allocate_lock called\n"));
     if (!initialized)
         PyThread_init_thread();
 
-    PyThread_type_lock lock = ++current_lock;
+    WasiThreadLock *lock = wt_allocate_lock();
     dprintf(("PyThread_allocate_lock() -> %p\n", lock));
-    return lock;
+    return (PyThread_type_lock)lock;
 }
 
 void
 PyThread_free_lock(PyThread_type_lock lock)
 {
     dprintf(("PyThread_free_lock(%p) called\n", lock));
+    wt_free_lock((WasiThreadLock *) lock);
 }
 
 int
@@ -75,8 +74,16 @@ PyThread_acquire_lock_timed(PyThread_type_lock lock, PY_TIMEOUT_T microseconds,
                             int intr_flag)
 {
     dprintf(("PyThread_acquire_lock_timed(%p, %lld, %d) called\n", lock, microseconds, intr_flag));
+
+    PyLockStatus status = PY_LOCK_FAILURE;
+    if (wt_acquire_lock((WasiThreadLock *) lock)) {
+      status = PY_LOCK_ACQUIRED;
+    }
+
     dprintf(("PyThread_acquire_lock_timed(%p, %lld, %d) -> %d\n",
 	     lock, microseconds, intr_flag, PY_LOCK_ACQUIRED));
+
+
     return PY_LOCK_ACQUIRED;
 }
 
@@ -84,9 +91,10 @@ void
 PyThread_release_lock(PyThread_type_lock lock)
 {
     dprintf(("PyThread_release_lock(%p) called\n", lock));
+    wt_release_lock((WasiThreadLock *) lock);
 }
 
-/* Thread Specific Storage (TSS) API
+/* thread Specific Storage (TSS) API
 
    Platform-specific components of TSS API implementation.
 */
@@ -94,26 +102,27 @@ PyThread_release_lock(PyThread_type_lock lock)
 int
 PyThread_tss_create(Py_tss_t *key)
 {
-    return 0;
+  return wt_tss_create(key->_key) ? 0 : 1;
 }
 
 void
 PyThread_tss_delete(Py_tss_t *key)
 {
-    return;
+    if(!wt_tss_delete(key->_key))
+      dprintf(("PyThread_tss_delete failed to delete key: %p", key->_key));
 }
 
 int
 PyThread_tss_set(Py_tss_t *key, void *value)
 {
-    return 0;
+  return wt_tss_set(key->_key, value) ? 0 : 1;
 }
 
 void *
 PyThread_tss_get(Py_tss_t *key)
 {
-    assert(key != NULL);
-    return NULL;
+  assert(key != NULL);
+  return wt_tss_get(key->_key);
 }
 
 /* The following are only needed if native TLS support exists */
