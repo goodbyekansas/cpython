@@ -70,6 +70,8 @@
 #include <time.h>               /* for seeding to current time */
 #ifdef HAVE_PROCESS_H
 #  include <process.h>          /* needed for getpid() */
+#elif defined(__wasi__)
+#  include <wasi_python_shims.h>
 #endif
 
 /* Period parameters -- These are all magic.  Don't change. */

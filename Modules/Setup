@@ -169,7 +169,31 @@ _asyncio _asynciomodule.c  # Fast asyncio Future
 _json -I$(srcdir)/Include/internal -DPy_BUILD_CORE_BUILTIN _json.c	# _json speedups
 _statistics _statisticsmodule.c # statistics accelerator
 
+# Helper module for various ascii-encoders
+binascii binascii.c
+
+# Note that the _md5 and _sha modules are normally only built if the
+# system does not have the OpenSSL libs containing an optimized version.
+
+# The _md5 module implements the RSA Data Security, Inc. MD5
+# Message-Digest Algorithm, described in RFC 1321.
+
+_md5 md5module.c
+
+
+# The _sha module implements the SHA checksum algorithms.
+# (NIST's Secure Hash Algorithms.)
+_sha1 sha1module.c
+_sha256 sha256module.c
+_sha512 sha512module.c
+_sha3 _sha3/sha3module.c
+
+# Modules that should always be present (non UNIX dependent):
+_random _randommodule.c	# Random number generator
+
 *disabled*
+
+_testcapi _testcapimodule.c    # Python C API test module
 
 # this makes the exe take an infinite time to run with debug information under wasmtime
 unicodedata unicodedata.c    # static Unicode character database
@@ -200,10 +224,6 @@ pwd
 
 readline readline.c -lreadline -ltermcap
 
-
-# Modules that should always be present (non UNIX dependent):
-_testcapi _testcapimodule.c    # Python C API test module
-_random _randommodule.c	# Random number generator
 
 
 # Modules with some UNIX dependencies -- on by default:
@@ -253,22 +273,6 @@ _posixsubprocess _posixsubprocess.c  # POSIX subprocess module helper
 
 audioop audioop.c	# Operations on audio samples
 
-
-# Note that the _md5 and _sha modules are normally only built if the
-# system does not have the OpenSSL libs containing an optimized version.
-
-# The _md5 module implements the RSA Data Security, Inc. MD5
-# Message-Digest Algorithm, described in RFC 1321.
-
-_md5 md5module.c
-
-
-# The _sha module implements the SHA checksum algorithms.
-# (NIST's Secure Hash Algorithms.)
-_sha1 sha1module.c
-_sha256 sha256module.c
-_sha512 sha512module.c
-_sha3 _sha3/sha3module.c
 
 # _blake module
 _blake2 _blake2/blake2module.c _blake2/blake2b_impl.c _blake2/blake2s_impl.c
@@ -342,9 +346,6 @@ _dbm _dbmmodule.c 	# dbm(3) may require -lndbm or similar
 
 _gdbm _gdbmmodule.c -I/usr/local/include -L/usr/local/lib -lgdbm
 
-
-# Helper module for various ascii-encoders
-binascii binascii.c
 
 # Fred Drake's interface to the Python parser
 parser parsermodule.c
