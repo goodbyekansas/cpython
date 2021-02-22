@@ -81,10 +81,10 @@ PyThread_acquire_lock_timed(PyThread_type_lock lock, PY_TIMEOUT_T microseconds,
     }
 
     dprintf(("PyThread_acquire_lock_timed(%p, %lld, %d) -> %d\n",
-	     lock, microseconds, intr_flag, PY_LOCK_ACQUIRED));
+	     lock, microseconds, intr_flag, status));
 
 
-    return PY_LOCK_ACQUIRED;
+    return status;
 }
 
 void
