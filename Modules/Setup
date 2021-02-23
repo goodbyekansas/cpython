@@ -202,6 +202,9 @@ unicodedata unicodedata.c    # static Unicode character database
 # _blake module
 _blake2 _blake2/blake2module.c _blake2/blake2b_impl.c _blake2/blake2s_impl.c
 
+# Socket module helper for socket(2)
+_socket socketmodule.c
+
 *disabled*
 
 _testcapi _testcapimodule.c    # Python C API test module
@@ -248,9 +251,6 @@ mmap mmapmodule.c
 
 # CSV file helper
 _csv _csv.c
-
-# Socket module helper for socket(2)
-_socket socketmodule.c
 
 # Socket module helper for SSL support; you must comment out the other
 # socket line above, and possibly edit the SSL variable:
