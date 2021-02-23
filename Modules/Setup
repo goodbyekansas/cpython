@@ -196,12 +196,15 @@ _sha3 _sha3/sha3module.c
 # Modules that should always be present (non UNIX dependent):
 _random _randommodule.c	# Random number generator
 
+# this makes the exe take an infinite time to run with debug information under wasmtime
+unicodedata unicodedata.c    # static Unicode character database
+
+# _blake module
+_blake2 _blake2/blake2module.c _blake2/blake2b_impl.c _blake2/blake2s_impl.c
+
 *disabled*
 
 _testcapi _testcapimodule.c    # Python C API test module
-
-# this makes the exe take an infinite time to run with debug information under wasmtime
-unicodedata unicodedata.c    # static Unicode character database
 
 
 # setup.py tries to build these but fail
@@ -279,8 +282,6 @@ _posixsubprocess _posixsubprocess.c  # POSIX subprocess module helper
 audioop audioop.c	# Operations on audio samples
 
 
-# _blake module
-_blake2 _blake2/blake2module.c _blake2/blake2b_impl.c _blake2/blake2s_impl.c
 
 # The _tkinter module.
 #
