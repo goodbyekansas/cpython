@@ -169,6 +169,11 @@ _asyncio _asynciomodule.c  # Fast asyncio Future
 _json -I$(srcdir)/Include/internal -DPy_BUILD_CORE_BUILTIN _json.c	# _json speedups
 _statistics _statisticsmodule.c # statistics accelerator
 
+# Andrew Kuchling's zlib module.
+# This require zlib 1.1.3 (or later).
+# See http://www.gzip.org/zlib/
+zlib zlibmodule.c -lz
+
 # Helper module for various ascii-encoders
 binascii binascii.c
 
@@ -349,12 +354,6 @@ _gdbm _gdbmmodule.c -I/usr/local/include -L/usr/local/lib -lgdbm
 
 # Fred Drake's interface to the Python parser
 parser parsermodule.c
-
-
-# Andrew Kuchling's zlib module.
-# This require zlib 1.1.3 (or later).
-# See http://www.gzip.org/zlib/
-zlib zlibmodule.c -I$(prefix)/include -L$(exec_prefix)/lib -lz
 
 # Interface to the Expat XML parser
 # More information on Expat can be found at www.libexpat.org.
